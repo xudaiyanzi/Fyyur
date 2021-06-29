@@ -15,6 +15,9 @@ from forms import *
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
+# #### import config since it is outside of this app.py
+# import config
+# data_url = config.SQLALCHEMY_DATABASE_URI
 
 app = Flask(__name__)
 moment = Moment(app)
@@ -22,10 +25,26 @@ app.config.from_object('config')
 db = SQLAlchemy(app)
 
 # TODO: connect to a local postgresql database
+##--> what I have done is go to the config and build the connection
+
+
+##### enable migrate
+# use migrate
+from flask_migrate import Migrate
+migrate = Migrate(app, db)
 
 #----------------------------------------------------------------------------#
 # Models.
 #----------------------------------------------------------------------------#
+
+### set up a many-to-many relationship because the pre-input data
+###### has inbeded columns
+
+shows = db.Table('association',
+  db.Column('venue_id', db.Integer, db.ForeignKey('Venue.id')),
+  db.Column('artist_id', db.Integer, db.ForeignKey('Artist.id')))
+
+
 
 class Venue(db.Model):
     __tablename__ = 'Venue'
@@ -41,9 +60,14 @@ class Venue(db.Model):
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
     ## by comparing the class model and pre-input data in /venues/<int:venue_id>,
-    ### I found the missing field is ''
+    ### Below are the missing fields
 
-    # num_upcoming_shows = db.Column(db.Integer)
+    genres = db.Column(db.String(120))
+    website = db.Column(db.String(500))
+    seeking_talent = db.Column(db.Boolean)
+    seeking_description = db.Column(db.String(1000))
+    past_shows_count = db.Column(db.Integer)
+    upcoming_shows_count = db.Column(db.Integer)
 
 class Artist(db.Model):
     __tablename__ = 'Artist'
@@ -58,6 +82,11 @@ class Artist(db.Model):
     facebook_link = db.Column(db.String(120))
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
+    website = db.Column(db.String(500))
+    seeking_venue = db.Column(db.Boolean)
+    past_shows_count = db.Column(db.Integer)
+    upcoming_shows_count = db.Column(db.Integer)
+
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 
