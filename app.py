@@ -40,6 +40,10 @@ class Venue(db.Model):
     facebook_link = db.Column(db.String(120))
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
+    ## by comparing the class model and pre-input data in /venues/<int:venue_id>,
+    ### I found the missing field is ''
+
+    # num_upcoming_shows = db.Column(db.Integer)
 
 class Artist(db.Model):
     __tablename__ = 'Artist'
