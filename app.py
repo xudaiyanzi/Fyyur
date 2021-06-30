@@ -45,7 +45,6 @@ shows = db.Table('association',
   db.Column('artist_id', db.Integer, db.ForeignKey('Artist.id')))
 
 
-
 class Venue(db.Model):
     __tablename__ = 'Venue'
 
@@ -255,9 +254,51 @@ def create_venue_submission():
   # TODO: insert form data as a new Venue record in the db, instead
   # TODO: modify data to be the data object returned from db insertion
 
-  # on successful db insert, flash success
-  flash('Venue ' + request.form['name'] + ' was successfully listed!')
+  # start with no error
+  error = False
+
+  # use try-except-close to control the session controller
+  ## this could help handle errors
+  try:
+      # use the request to get the data from html
+      name = request.form['name']
+      city = request.form['city']
+      state = request.form['state']
+      address = request.form['address']
+      phone = request.form['phone']
+      genres = request.form['genres']
+      facebook_link = request.form['facebook_link']
+      image_link = request.form['image_link']
+      website_link = request.form['website_link']
+      seeking_talent = request.form['seeking_talent']
+      seeking_description= request.form['seeking_description']
+      
+      venue_item = Venue(name=name, city=city, state=state, address=address, 
+                          phone=phone, genres=genres, facebook_link=facebook_link,
+                          image_link=image_link, website=website_link,
+                          seeking_talent=seeking_talent, seeking_description=seeking_description)
+
+      db.session.add(venue_item)
+      db.session.commit()
+
+  except:
+      db.session.rollback()
+      error=True
+      import sys
+      print(sys.exc_info())
+  finally:
+      db.session.close()
+
   # TODO: on unsuccessful db insert, flash an error instead.
+
+  if error:
+    flash('Oops, an error occurred in Venue!' + 'The' + request.form['name'] + 'could not be listed.' )
+
+  else:
+      # on successful db insert, flash success
+    flash('Venue ' + request.form['name'] + ' was successfully listed!')
+
+
   # e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
   # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
   return render_template('pages/home.html')
