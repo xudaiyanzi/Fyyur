@@ -25,7 +25,8 @@ app.config.from_object('config')
 db = SQLAlchemy(app)
 
 # TODO: connect to a local postgresql database
-##--> what I have done is go to the config and build the connection
+# DONE!!! 
+#### what I have done is go to the config and build the connection
 
 
 ##### enable migrate
@@ -58,7 +59,8 @@ class Venue(db.Model):
     facebook_link = db.Column(db.String(120))
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
-    ## by comparing the class model and pre-input data in /venues/<int:venue_id>,
+    # DONE! 
+    # # by comparing the class model and pre-input data in /venues/<int:venue_id>,
     ### Below are the missing fields
 
     genres = db.Column(db.String(120))
@@ -81,8 +83,11 @@ class Artist(db.Model):
     facebook_link = db.Column(db.String(120))
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
+    # DONE!!
     website = db.Column(db.String(500))
     seeking_venue = db.Column(db.Boolean)
+
+    ###### NOT SURE ABOUT THE "show_count" ones!
     past_shows_count = db.Column(db.Integer)
     upcoming_shows_count = db.Column(db.Integer)
 
@@ -140,21 +145,29 @@ def venues():
       "num_upcoming_shows": 0,
     }]
   }]
-  return render_template('pages/venues.html', areas=data);
+  return render_template('pages/venues.html', areas=data)
 
+# @app.route('/venues/search', methods=['POST'])
 @app.route('/venues/search', methods=['POST'])
-def search_venues():
+def search_venues(search):
   # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
   # seach for Hop should return "The Musical Hop".
   # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
-  response={
-    "count": 1,
-    "data": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
-  }
+  
+  request.method == 'POST':
+  form = request.form
+  search_value = form['search_value']
+  search = "%{}%".format(search_value)
+  response = Venue.query.filter(Venue.name.like(search)).all()
+
+  # response={
+  #   "count": 1,
+  #   "data": [{
+  #     "id": 2,
+  #     "name": "The Dueling Pianos Bar",
+  #     "num_upcoming_shows": 0,
+  #   }]
+  # }
   return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
 
 @app.route('/venues/<int:venue_id>')
@@ -253,6 +266,8 @@ def create_venue_form():
 def create_venue_submission():
   # TODO: insert form data as a new Venue record in the db, instead
   # TODO: modify data to be the data object returned from db insertion
+  
+  # DONE!
 
   # start with no error
   error = False
@@ -307,6 +322,8 @@ def create_venue_submission():
 def delete_venue(venue_id):
   # TODO: Complete this endpoint for taking a venue_id, and using
   # SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
+
+  # DONE!
   try:
       Venue.query.filter_by(id=venue_id).delete()
       db.session.commit()
@@ -452,7 +469,12 @@ def edit_artist(artist_id):
     "image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80"
   }
   # TODO: populate form with fields from artist with ID <artist_id>
-  return render_template('forms/edit_artist.html', form=form, artist=artist)
+
+  ## maybe DONE!
+
+  # return render_template('forms/edit_artist.html', form=form, artist=artist)
+  return render_template('forms/edit_artist.html', form=form, artist_id=Artist.query.filter_by(id=artist_id).all()
+  )
 
 @app.route('/artists/<int:artist_id>/edit', methods=['POST'])
 def edit_artist_submission(artist_id):
@@ -479,12 +501,17 @@ def edit_venue(venue_id):
     "image_link": "https://images.unsplash.com/photo-1543900694-133f37abaaa5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60"
   }
   # TODO: populate form with values from venue with ID <venue_id>
-  return render_template('forms/edit_venue.html', form=form, venue=venue)
+
+  # MAYBE DONE?
+  # return render_template('forms/edit_venue.html', form=form, venue=venue)
+  return render_template('forms/edit_venue.html', form=form, venue_id=venue_id)
 
 @app.route('/venues/<int:venue_id>/edit', methods=['POST'])
 def edit_venue_submission(venue_id):
   # TODO: take values from the form submitted, and update existing
   # venue record with ID <venue_id> using the new attributes
+
+  
   return redirect(url_for('show_venue', venue_id=venue_id))
 
 #  Create Artist
