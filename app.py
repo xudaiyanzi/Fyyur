@@ -38,12 +38,17 @@ migrate = Migrate(app, db)
 # Models.
 #----------------------------------------------------------------------------#
 
-### set up a many-to-many relationship because the pre-input data
-###### has inbeded columns
+### set up a many-to-many relationship "shows" to link venue and artists
+### build the association object
 
-shows = db.Table('association',
-  db.Column('venue_id', db.Integer, db.ForeignKey('Venue.id')),
-  db.Column('artist_id', db.Integer, db.ForeignKey('Artist.id')))
+class Shows(Base):
+    __tablename__ = 'Shows'
+
+    id = db.Column(db.Integer, primary_key=True)
+    venue_id = db.Column('venue_id', db.Integer, db.ForeignKey('Venue.id'), primary_key=True),
+    artist_id = db.Column('artist_id', db.Integer, db.ForeignKey('Artist.id'), primary_key=True),
+    start_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    
 
 
 class Venue(db.Model):
@@ -60,15 +65,17 @@ class Venue(db.Model):
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
     # DONE! 
-    # # by comparing the class model and pre-input data in /venues/<int:venue_id>,
-    ### Below are the missing fields
+
+    ## 1) by comparing the class model and pre-input data in /venues/<int:venue_id>,
+    ####  Below are the missing fields
 
     genres = db.Column(db.String(120))
     website = db.Column(db.String(500))
     seeking_talent = db.Column(db.Boolean)
     seeking_description = db.Column(db.String(1000))
-    past_shows_count = db.Column(db.Integer)
-    upcoming_shows_count = db.Column(db.Integer)
+    
+    ### 2) build the relationship with model "Artist"
+    show = db.relationship("Shows", backref=db.backref('Venues', lazy=True))
 
 class Artist(db.Model):
     __tablename__ = 'Artist'
@@ -87,9 +94,9 @@ class Artist(db.Model):
     website = db.Column(db.String(500))
     seeking_venue = db.Column(db.Boolean)
 
-    ###### NOT SURE ABOUT THE "show_count" ones!
-    past_shows_count = db.Column(db.Integer)
-    upcoming_shows_count = db.Column(db.Integer)
+    # ###### NOT SURE ABOUT THE "show_count" ones!
+    # past_shows_count = db.Column(db.Integer)
+    # upcoming_shows_count = db.Column(db.Integer)
 
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
@@ -147,18 +154,11 @@ def venues():
   }]
   return render_template('pages/venues.html', areas=data)
 
-# @app.route('/venues/search', methods=['POST'])
 @app.route('/venues/search', methods=['POST'])
 def search_venues(search):
   # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
   # seach for Hop should return "The Musical Hop".
   # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
-  
-  request.method == 'POST':
-  form = request.form
-  search_value = form['search_value']
-  search = "%{}%".format(search_value)
-  response = Venue.query.filter(Venue.name.like(search)).all()
 
   # response={
   #   "count": 1,
@@ -168,6 +168,13 @@ def search_venues(search):
   #     "num_upcoming_shows": 0,
   #   }]
   # }
+
+    
+  results = []
+  search_string = search.data['search']
+
+  if search.data['search'] == '':
+
   return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
 
 @app.route('/venues/<int:venue_id>')
