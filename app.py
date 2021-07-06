@@ -41,7 +41,7 @@ migrate = Migrate(app, db)
 ### set up a many-to-many relationship "shows" to link venue and artists
 ### build the association object
 
-class Shows(Base):
+class Shows(db.Model):
     __tablename__ = 'Shows'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -93,10 +93,6 @@ class Artist(db.Model):
     # DONE!!
     website = db.Column(db.String(500))
     seeking_venue = db.Column(db.Boolean)
-
-    # ###### NOT SURE ABOUT THE "show_count" ones!
-    # past_shows_count = db.Column(db.Integer)
-    # upcoming_shows_count = db.Column(db.Integer)
 
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
@@ -160,20 +156,20 @@ def search_venues(search):
   # seach for Hop should return "The Musical Hop".
   # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
 
-  # response={
-  #   "count": 1,
-  #   "data": [{
-  #     "id": 2,
-  #     "name": "The Dueling Pianos Bar",
-  #     "num_upcoming_shows": 0,
-  #   }]
-  # }
+  response={
+    "count": 1,
+    "data": [{
+      "id": 2,
+      "name": "The Dueling Pianos Bar",
+      "num_upcoming_shows": 0,
+    }]
+  }
 
     
-  results = []
-  search_string = search.data['search']
+  # results = []
+  # search_string = search.data['search']
 
-  if search.data['search'] == '':
+  # if search.data['search'] == '':
 
   return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
 
