@@ -2,6 +2,12 @@
 # Models.
 #----------------------------------------------------------------------------#
 
+from app import db
+
+# from the datetime in the python to import datetime
+# not need import it from sqlalchemy
+from datetime import datetime
+
 ### set up a many-to-many relationship "shows" to link venue and artists
 ### build the association object
 
@@ -12,7 +18,8 @@ class Shows(db.Model):
     venue_id = db.Column('venue_id', db.Integer, db.ForeignKey('Venue.id'), primary_key=True),
     artist_id = db.Column('artist_id', db.Integer, db.ForeignKey('Artist.id'), primary_key=True),
     start_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    venue = db.relationship("Venue", backref=db.backref('Venues', lazy=True))
+    venue = db.relationship("Venue", backref=db.backref("Shows", lazy=True))
+    artist = db.relationship("Artist", backref=db.backref("Shows", lazy=True))
 
 
 class Venue(db.Model):
@@ -39,7 +46,7 @@ class Venue(db.Model):
     seeking_description = db.Column(db.String(1000))
     
     ### 2) build the relationship with model "Artist"
-    show = db.relationship("Shows", backref=db.backref('Venues', lazy=True))
+    artists = db.relationship("Artist", secondary="Shows")
 
 class Artist(db.Model):
     __tablename__ = 'Artist'
