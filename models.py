@@ -2,7 +2,12 @@
 # Models.
 #----------------------------------------------------------------------------#
 
-from app import db
+# from app import db
+
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import relationship, backref
+
+db = SQLAlchemy()
 
 # from the datetime in the python to import datetime
 # not need import it from sqlalchemy
@@ -10,16 +15,6 @@ from datetime import datetime
 
 ### set up a many-to-many relationship "shows" to link venue and artists
 ### build the association object
-
-class Shows(db.Model):
-    __tablename__ = 'Shows'
-
-    id = db.Column(db.Integer, primary_key=True)
-    venue_id = db.Column('venue_id', db.Integer, db.ForeignKey('Venue.id'), primary_key=True),
-    artist_id = db.Column('artist_id', db.Integer, db.ForeignKey('Artist.id'), primary_key=True),
-    start_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    venue = db.relationship("Venue", backref=db.backref("Shows", lazy=True))
-    artist = db.relationship("Artist", backref=db.backref("Shows", lazy=True))
 
 
 class Venue(db.Model):
@@ -42,11 +37,12 @@ class Venue(db.Model):
 
     genres = db.Column(db.String(120))
     website = db.Column(db.String(500))
-    seeking_talent = db.Column(db.Boolean)
+    seeking_talent = db.Column(db.Boolean, default=False, server_default="false")
     seeking_description = db.Column(db.String(1000))
     
     ### 2) build the relationship with model "Artist"
-    artists = db.relationship("Artist", secondary="Shows")
+    # shows = relationship("Shows", backref=backref("Venue", lazy=True))
+    artist = db.relationship("Artist", backref=backref("Venue"), secondary="Shows")
 
 class Artist(db.Model):
     __tablename__ = 'Artist'
@@ -64,3 +60,15 @@ class Artist(db.Model):
     # DONE!!
     website = db.Column(db.String(500))
     seeking_venue = db.Column(db.Boolean)
+
+    venue = relationship("Venue", secondary="Shows")
+
+class Shows(db.Model):
+    __tablename__ = 'Shows'
+
+    id = db.Column(db.Integer, primary_key=True)
+    venue_id = db.Column('venue_id', db.Integer, db.ForeignKey('Venue.id'), primary_key=True)
+    artist_id = db.Column('artist_id', db.Integer, db.ForeignKey('Artist.id'), primary_key=True)
+    start_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    venue = relationship(Venue, backref=backref("Shows", cascade="all, delete-orphan"))
+    artist = relationship(Artist, backref=backref("Shows", cascade="all, delete-orphan"))
