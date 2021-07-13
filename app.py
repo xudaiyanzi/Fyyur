@@ -13,7 +13,6 @@ from logging import Formatter, FileHandler
 # from flask_wtf import Form
 from flask_wtf import FlaskForm
 from forms import *
-from models import Venue, Artist, Shows
 
 #----------------------------------------------------------------------------#
 # App Config.
@@ -23,44 +22,35 @@ from models import Venue, Artist, Shows
 # DONE!!! 
 ### what I have done is go to the config and build the connection
 
-# # --------------------------------------
-# # ###### FIRST TRY on app *BEGIN* ######
-# # --------------------------------------
+
 app = Flask(__name__)
 moment = Moment(app)
 app.config.from_object('config')
 db = SQLAlchemy(app)
-# # --------------------------------------
-# # ###### FIRST TRY on app *END* #######
-# # --------------------------------------
+
+# supporess the warnings
+### "SADeprecationWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True or False to suppress this warning.
+  #'SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and'"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
-#--------------------------------------
-####### SECOND TRY on app *BEGIN* ######
-#--------------------------------------
-# db=SQLAlchemy()
-
-# def create_app():
-#     app = Flask(__name__)
-#     db.init_app(app)   
-#     return app
-
-# def connect_db():
-#       with app.app_context():
-#       venue = db.Venue
-#       db.session.add(venue)
-#       db.seesion.commit()
-
+from models import Venue, Artist, Shows
 # db.create_all()
-#--------------------------------------
-####### SECOND TRY on app *END* #######
-#--------------------------------------
+# db.session.commit()
+
+## the "with" stattment can used to solve the "No application found" problem
+with app.app_context():
+    db.create_all()
+    db.session.commit()
 
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
+
+
 #### enable migrate
 from flask_migrate import Migrate
 migrate = Migrate(app, db)
+
 
 #----------------------------------------------------------------------------#
 # Filters.
