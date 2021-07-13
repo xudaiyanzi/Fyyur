@@ -2,12 +2,11 @@
 # Models.
 #----------------------------------------------------------------------------#
 
-# from app import db
-
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship, backref
 
 db = SQLAlchemy()
+
 
 # from the datetime in the python to import datetime
 # not need import it from sqlalchemy
@@ -37,7 +36,8 @@ class Venue(db.Model):
 
     genres = db.Column(db.String(120))
     website = db.Column(db.String(500))
-    seeking_talent = db.Column(db.Boolean, default=False, server_default="false")
+    # seeking_talent = db.Column(db.Boolean, default=False, server_default="false")
+    seeking_talent = db.Column(db.Boolean, default=False, server_default="false", nullable=False)
     seeking_description = db.Column(db.String(1000))
     
     ### 2) build the relationship with model "Artist"
@@ -72,3 +72,6 @@ class Shows(db.Model):
     start_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     venue = relationship(Venue, backref=backref("Shows", cascade="all, delete-orphan"))
     artist = relationship(Artist, backref=backref("Shows", cascade="all, delete-orphan"))
+
+db.create_all()
+db.session.commit()

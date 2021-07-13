@@ -13,14 +13,11 @@ from logging import Formatter, FileHandler
 # from flask_wtf import Form
 from flask_wtf import FlaskForm
 from forms import *
-from models import *
+from models import Venue, Artist, Shows
+
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
-# #### import config since it is outside of this app.py
-# import config
-# data_url = config.SQLALCHEMY_DATABASE_URI
-
 app = Flask(__name__)
 moment = Moment(app)
 app.config.from_object('config')
@@ -28,15 +25,43 @@ db = SQLAlchemy(app)
 
 # TODO: connect to a local postgresql database
 # DONE!!! 
-#### what I have done is go to the config and build the connection
+### what I have done is go to the config and build the connection
+
+# --------------------------------------
+# ###### FIRST TRY on app *BEGIN* ######
+# --------------------------------------
+
+# --------------------------------------
+# ###### FIRST TRY on app *END* #######
+# --------------------------------------
 
 
-##### enable migrate
-# use migrate
-from flask_migrate import Migrate
-migrate = Migrate(app, db)
+#--------------------------------------
+####### SECOND TRY on app *BEGIN* ######
+#--------------------------------------
+
+
+# def create_app():
+#     db.app = app
+#     db.init_app(app)   
+#     return db
+
+# def connect_db():
+#     with app.app_context():
+#       venue = db.Venue
+#       db.session.add(venue)
+#       db.seesion.commit()
+
+# db.create_all()
+#--------------------------------------
+####### SECOND TRY on app *END* #######
+#--------------------------------------
+
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
+#### enable migrate
+from flask_migrate import Migrate
+migrate = Migrate(app, db)
 
 #----------------------------------------------------------------------------#
 # Filters.
@@ -201,12 +226,14 @@ def show_venue(venue_id):
 #  Create Venue
 #  ----------------------------------------------------------------
 
-# @app.route('/venues/create', methods=['GET'])
-# def create_venue_form():
-#   form = VenueForm()
-#   return render_template('forms/new_venue.html', form=form)
+@app.route('/venues/create', methods=['GET'])
+def create_venue_form():
+  form = VenueForm()
+  return render_template('forms/new_venue.html', form=form)
 
-@app.route('/venues/create', methods=['GET', 'POST'])
+# @app.route('/venues/create', methods=['GET', 'POST'])
+
+@app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
   # TODO: insert form data as a new Venue record in the db, instead
   # TODO: modify data to be the data object returned from db insertion
@@ -217,9 +244,9 @@ def create_venue_submission():
   # use try-except-close to control the session controller
   ## this could help handle errors
       
-  # try:
+  try:
       # use the request to get the data from html
-  if request.method == 'POST': 
+  # if request.method == 'POST': 
 
       name = request.form['name']
       city = request.form['city']
@@ -230,7 +257,8 @@ def create_venue_submission():
       facebook_link = request.form['facebook_link']
       image_link = request.form['image_link']
       website = request.form['website_link']
-      seeking_talent = request.form['seeking_talent']
+      # seeking_talent = request.form['seeking_talent']
+      seeking_talent = request.form.get('seeking_talent')
       seeking_description= request.form['seeking_description']
       
       venue_item = Venue(name=name, city=city, state=state, address=address, 
@@ -240,18 +268,18 @@ def create_venue_submission():
 
       db.session.add(venue_item)
       db.session.commit()
-      return render_template('pages/home.html')
-  else:
-      form = VenueForm()
-      return render_template('forms/new_venue.html', form=form)
+      
+  # else:
+  #     form = VenueForm()
+  #     return render_template('forms/new_venue.html', form=form)
   
-  # except:
-  #     db.session.rollback()
-  #     error=True
-  #     import sys
-  #     print(sys.exc_info())
-  # finally:
-  #     db.session.close()
+  except:
+      db.session.rollback()
+      error=True
+      import sys
+      print(sys.exc_info())
+  finally:
+      db.session.close()
 
   # TODO: on unsuccessful db insert, flash an error instead.
 
@@ -265,7 +293,7 @@ def create_venue_submission():
 
   # e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
   # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
-  # return render_template('pages/home.html')
+  return render_template('pages/home.html')
   
 
 @app.route('/venues/<venue_id>', methods=['DELETE'])
