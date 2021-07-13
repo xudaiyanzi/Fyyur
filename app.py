@@ -18,36 +18,35 @@ from models import Venue, Artist, Shows
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
-app = Flask(__name__)
-moment = Moment(app)
-app.config.from_object('config')
-db = SQLAlchemy(app)
 
 # TODO: connect to a local postgresql database
 # DONE!!! 
 ### what I have done is go to the config and build the connection
 
-# --------------------------------------
-# ###### FIRST TRY on app *BEGIN* ######
-# --------------------------------------
-
-# --------------------------------------
-# ###### FIRST TRY on app *END* #######
-# --------------------------------------
+# # --------------------------------------
+# # ###### FIRST TRY on app *BEGIN* ######
+# # --------------------------------------
+app = Flask(__name__)
+moment = Moment(app)
+app.config.from_object('config')
+db = SQLAlchemy(app)
+# # --------------------------------------
+# # ###### FIRST TRY on app *END* #######
+# # --------------------------------------
 
 
 #--------------------------------------
 ####### SECOND TRY on app *BEGIN* ######
 #--------------------------------------
-
+# db=SQLAlchemy()
 
 # def create_app():
-#     db.app = app
+#     app = Flask(__name__)
 #     db.init_app(app)   
-#     return db
+#     return app
 
 # def connect_db():
-#     with app.app_context():
+#       with app.app_context():
 #       venue = db.Venue
 #       db.session.add(venue)
 #       db.seesion.commit()
