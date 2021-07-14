@@ -13,7 +13,7 @@ from logging import Formatter, FileHandler
 # from flask_wtf import Form
 from flask_wtf import FlaskForm
 from forms import *
-
+from models import db, Venue, Artist, Shows
 
 #----------------------------------------------------------------------------#
 # App Config.
@@ -25,10 +25,8 @@ from forms import *
 
 
 app = Flask(__name__)
-moment = Moment(app)
 app.config.from_object('config')
-
-db = SQLAlchemy()
+moment = Moment(app)
 db.init_app(app)
 
 #### enable migrate
@@ -36,7 +34,7 @@ from flask_migrate import Migrate
 migrate = Migrate(app, db)
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
-from models import Venue, Artist, Shows
+
 
 ## the "with" stattment can used to solve the "No application found" problem
 with app.app_context():
