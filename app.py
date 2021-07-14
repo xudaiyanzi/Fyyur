@@ -35,18 +35,20 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-from models import Venue, Artist, Shows
+# from models import Venue, Artist, Shows
 # db.create_all()
 # db.session.commit()
 
 ## the "with" stattment can used to solve the "No application found" problem
 with app.app_context():
-    db.create_all()
+    # db.create_all()
     db.session.commit()
 
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
-
+from models import Venue, Artist, Shows
+# db.create_all()
+# db.session.commit()
 
 #### enable migrate
 from flask_migrate import Migrate

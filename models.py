@@ -44,6 +44,9 @@ class Venue(db.Model):
     # shows = relationship("Shows", backref=backref("Venue", lazy=True))
     artist = db.relationship("Artist", backref=backref("Venue"), secondary="Shows")
 
+    def __repr__(self):
+        return "<Venue>" % self.name
+
 class Artist(db.Model):
     __tablename__ = 'Artist'
 
@@ -63,6 +66,9 @@ class Artist(db.Model):
 
     venue = relationship("Venue", secondary="Shows")
 
+    def __repr__(self):
+        return "<Artist>" % self.name
+
 class Shows(db.Model):
     __tablename__ = 'Shows'
 
@@ -73,5 +79,6 @@ class Shows(db.Model):
     venue = relationship(Venue, backref=backref("Shows", cascade="all, delete-orphan"))
     artist = relationship(Artist, backref=backref("Shows", cascade="all, delete-orphan"))
 
-db.create_all()
-db.session.commit()
+    def __repr__(self):
+        return "<Shows>" % self.id % self.venue_id % self.artist_id % self.start_time
+
