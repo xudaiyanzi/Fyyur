@@ -26,13 +26,14 @@ from forms import *
 app = Flask(__name__)
 moment = Moment(app)
 app.config.from_object('config')
-db = SQLAlchemy(app)
+
 
 # supporess the warnings
 ### "SADeprecationWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True or False to suppress this warning.
   #'SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and'"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+db = SQLAlchemy(app)
 
 from models import Venue, Artist, Shows
 # db.create_all()
