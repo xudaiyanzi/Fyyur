@@ -28,11 +28,6 @@ app = Flask(__name__)
 moment = Moment(app)
 app.config.from_object('config')
 
-# supporess the warnings
-### "SADeprecationWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True or False to suppress this warning.
-  #'SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and'"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
 db = SQLAlchemy()
 db.init_app(app)
 
@@ -40,22 +35,13 @@ db.init_app(app)
 from flask_migrate import Migrate
 migrate = Migrate(app, db)
 
-
-
+# TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
+from models import Venue, Artist, Shows
 
 ## the "with" stattment can used to solve the "No application found" problem
 with app.app_context():
-  from models import Venue, Artist, Shows
   # db.create_all()
   db.session.commit()
-
-
-
-# TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
-
-
-
-
 
 #----------------------------------------------------------------------------#
 # Filters.
