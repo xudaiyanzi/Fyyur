@@ -38,7 +38,6 @@ migrate = Migrate(app, db)
 
 ## the "with" stattment can used to solve the "No application found" problem
 with app.app_context():
-  # db.create_all()
   db.session.commit()
 
 #----------------------------------------------------------------------------#
@@ -235,8 +234,26 @@ def create_venue_submission():
       facebook_link = request.form['facebook_link']
       image_link = request.form['image_link']
       website = request.form['website_link']
+      
+      #### for the seeking_talent field, we want to check if the checkbox is checked
+      #### if it is, then we want to set seeking_talent to true
+      if 'seeking_talent' in request.form:
+            seeking_talent = True
+      else:
+            seeking_talent = False
+
+      #### here, we should not just get the request.form['seeking_talent']
+      #### becasue it returns a string, not a boolean
+      #### we need to convert it to boolean
+
       # seeking_talent = request.form['seeking_talent']
-      seeking_talent = request.form.get('seeking_talent')
+      # seeking_talent = request.form.get('seeking_talent')
+
+      #### we also do not use the checkbox syntex as the todo_app project
+      #### because we used the wtforms library. it is much easier
+      #### one can revise the code in todo_app with wtforms and see how it is different
+
+
       seeking_description= request.form['seeking_description']
       
       venue_item = Venue(name=name, city=city, state=state, address=address, 
