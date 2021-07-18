@@ -12,8 +12,11 @@ import logging
 from logging import Formatter, FileHandler
 # from flask_wtf import Form
 from flask_wtf import FlaskForm
+
 from forms import *
 from models import db, Venue, Artist, Shows
+from datetime import datetime
+from sqlalchemy import func
 
 #----------------------------------------------------------------------------#
 # App Config.
@@ -70,27 +73,35 @@ def index():
 def venues():
   # TODO: replace with real venues data.
   #       num_shows should be aggregated based on number of upcoming shows per venue.
-  data=[{
-    "city": "San Francisco",
-    "state": "CA",
-    "venues": [{
-      "id": 1,
-      "name": "The Musical Hop",
-      "num_upcoming_shows": 0,
-    }, {
-      "id": 3,
-      "name": "Park Square Live Music & Coffee",
-      "num_upcoming_shows": 1,
-    }]
-  }, {
-    "city": "New York",
-    "state": "NY",
-    "venues": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
-  }]
+
+  wasNow = datetime.now()
+  num_upcoming_shows = 0
+  data = []
+
+  locations = db.session.query(Venue.city, Venue.state).distinct()
+  for location in locations:
+    location_city = location.city
+    location_state = location.state
+    venue_data = []
+
+    venue_filters = Venue.query.filter_by(city=location_city,state=location_state).all()
+
+    for venue_filter in venue_filters:
+      venue_id = venue_filter.id
+      venue_name = venue_filter.name
+      num_upcoming_shows = len(Shows.query.filter_by(venue_id=venue_id).filter(Shows.start_time>wasNow).all())
+      venue_data.append({
+        'id':venue_id,
+        'name':venue_name,
+        'num_upcoming_shows':num_upcoming_shows
+      })
+    
+    data.append({
+      'city':location_city,
+      'state':location_state,
+      'venues':venue_data
+    })
+
   return render_template('pages/venues.html', areas=data)
 
 @app.route('/venues/search', methods=['POST'])
