@@ -275,8 +275,9 @@ def delete_venue(venue_id):
   
   # # start with no error
   error = False
-
+  
   try:
+
       Venue.query.filter_by(id=venue_id).delete()
       db.session.commit()
 
@@ -290,12 +291,12 @@ def delete_venue(venue_id):
     flash('Oops, an error occurred in Venue! The venue could not be delete.' )
 
   else:
-    flash('The select venue was successfully deleted!')
+    flash('The venue was successfully deleted!')
 
   #### can not use redirect(url) here, because it gives a 405 error
-  # return redirect(url_for('show_venue'))
+  return redirect('/venues', code=302)
 
-  return render_template('pages/home.html')
+  # return render_template('pages/home.html')
 
 #  Artists
 #  ----------------------------------------------------------------
