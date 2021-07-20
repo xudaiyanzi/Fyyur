@@ -267,7 +267,7 @@ def create_venue_submission():
   
 
 # @app.route('/venues/<venue_id>', methods=['DELETE'])
-@app.route('/venues/<venue_id>/delete', methods=['DELETE'])
+@app.route('/venues/<int:venue_id>/delete', methods=['DELETE'])
 
 def delete_venue(venue_id):
   # TODO: Complete this endpoint for taking a venue_id, and using
@@ -292,8 +292,10 @@ def delete_venue(venue_id):
   else:
     flash('The select venue was successfully deleted!')
 
-  return redirect(url_for('venues'))
-  # return render_template('pages/venues.html')
+  #### can not use redirect(url) here, because it gives a 405 error
+  # return redirect(url_for('show_venue'))
+
+  return render_template('pages/home.html')
 
 #  Artists
 #  ----------------------------------------------------------------
