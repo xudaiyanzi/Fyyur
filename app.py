@@ -136,6 +136,8 @@ def show_venue(venue_id):
   # shows the venue page with the given venue_id
   # TODO: replace with real venue data from the venues table, using venue_id
 
+#Done!!!
+
   data_get = Venue.query.get(venue_id)
 
   past_shows = []
@@ -191,6 +193,7 @@ def create_venue_submission():
   # TODO: insert form data as a new Venue record in the db, instead
   # TODO: modify data to be the data object returned from db insertion
 
+# DONE!!!
   # # start with no error
   error = False
 
@@ -240,10 +243,6 @@ def create_venue_submission():
       db.session.add(venue_item)
       db.session.commit()
       
-  # else:
-  #     form = VenueForm()
-  #     return render_template('forms/new_venue.html', form=form)
-  
   except:
       db.session.rollback()
       error=True
@@ -267,10 +266,15 @@ def create_venue_submission():
   return render_template('pages/home.html')
   
 
-@app.route('/venues/<venue_id>', methods=['DELETE'])
+# @app.route('/venues/<venue_id>', methods=['DELETE'])
+@app.route('/venues/<venue_id>/delete', methods=['DELETE'])
+
 def delete_venue(venue_id):
   # TODO: Complete this endpoint for taking a venue_id, and using
   # SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
+  
+  # # start with no error
+  error = False
 
   try:
       Venue.query.filter_by(id=venue_id).delete()
@@ -281,12 +285,15 @@ def delete_venue(venue_id):
 
   finally:
       db.session.close()
-    
-  return jsonify({'success':True})
+  
+  if error:
+    flash('Oops, an error occurred in Venue! The venue could not be delete.' )
 
-  # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
-  # clicking that button delete it from the db then redirect the user to the homepage
-  return None
+  else:
+    flash('The select venue was successfully deleted!')
+
+  return redirect(url_for('venues'))
+  # return render_template('pages/venues.html')
 
 #  Artists
 #  ----------------------------------------------------------------
