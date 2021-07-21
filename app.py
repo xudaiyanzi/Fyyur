@@ -294,25 +294,30 @@ def delete_venue(venue_id):
     flash('The venue was successfully deleted!')
 
   #### can not use redirect(url) here, because it gives a 405 error
-  return redirect('/venues', code=302)
-
-  # return render_template('pages/home.html')
+  #### redirect is not allowed in a DELETE request
+  return jsonify({'success':True})
 
 #  Artists
 #  ----------------------------------------------------------------
 @app.route('/artists')
 def artists():
   # TODO: replace with real data returned from querying the database
-  data=[{
-    "id": 4,
-    "name": "Guns N Petals",
-  }, {
-    "id": 5,
-    "name": "Matt Quevedo",
-  }, {
-    "id": 6,
-    "name": "The Wild Sax Band",
-  }]
+
+  data = []
+  artist_info = {}
+
+  artist_filters = Artist.query.all()
+
+  for artist_filter in artist_filters:
+      artist_id = artist_filter.id
+      artist_name = artist_filter.name
+      artist_info = {
+        "id": artist_id,
+        "name": artist_name
+      }
+    
+      data.append(artist_info)
+
   return render_template('pages/artists.html', artists=data)
 
 @app.route('/artists/search', methods=['POST'])
