@@ -75,13 +75,13 @@ class Artist(db.Model):
 class Shows(db.Model):
     __tablename__ = 'Shows'
 
-    id = db.Column(db.Integer, primary_key=True)
-    venue_id = db.Column('venue_id', db.Integer, db.ForeignKey('Venue.id'), primary_key=True)
-    artist_id = db.Column('artist_id', db.Integer, db.ForeignKey('Artist.id'), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    venue_id = db.Column('venue_id', db.Integer, db.ForeignKey('Venue.id'), nullable=False)
+    artist_id = db.Column('artist_id', db.Integer, db.ForeignKey('Artist.id'), nullable=False)
     start_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    
     # venue = relationship(Venue, backref=backref("Shows", cascade="all, delete-orphan"))
     # artist = relationship(Artist, backref=backref("Shows", cascade="all, delete-orphan"))
-
     def __repr__(self):
         return "<Shows>" % self.id % self.venue_id % self.artist_id % self.start_time
 
