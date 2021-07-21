@@ -16,6 +16,7 @@ from flask_wtf import FlaskForm
 from forms import *
 from models import db, Venue, Artist, Shows
 from datetime import datetime
+import sys
 
 #----------------------------------------------------------------------------#
 # App Config.
@@ -251,7 +252,6 @@ def create_venue_submission():
   except:
       db.session.rollback()
       error=True
-      import sys
       print(sys.exc_info())
   finally:
       db.session.close()
@@ -390,13 +390,12 @@ def show_artist(artist_id):
     "name": data_get.name,
     "city": data_get.city,
     "state": data_get.state,
-    "address": data_get.address,
     "phone": data_get.phone,
     "website": data_get.website,
     "genres": data_get.genres,
     "website": data_get.website,
     "facebook_link": data_get.facebook_link,
-    "seeking_talent": data_get.seeking_talent,
+    "seeking_venue": data_get.seeking_venue,
     "seeking_description": data_get.seeking_description,
     "image_link": data_get.image_link,
     "past_shows": past_shows,
@@ -513,7 +512,6 @@ def create_artist_submission():
   except:
       db.session.rollback()
       error=True
-      import sys
       print(sys.exc_info())
   finally:
       db.session.close()
@@ -577,12 +575,28 @@ def create_show_submission():
   # called to create new shows in the db, upon submitting new show listing form
   # TODO: insert form data as a new Show record in the db, instead
 
-  # on successful db insert, flash success
-  flash('Show was successfully listed!')
-  # TODO: on unsuccessful db insert, flash an error instead.
-  # e.g., flash('An error occurred. Show could not be listed.')
-  # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
+  error = False
+  try:
+      venue_id = request.form['venue_id']
+      artist_id = request.form['artist_id']
+      start_time = request.form['start_time']
+      show_item = Shows(venue_id=venue_id, 
+                        artist_id=artist_id, 
+                        start_time=start_time)
+      db.session.add(show_item)
+      db.session.commit()  
+  except:
+      db.session.rollback()
+      error=True
+      print(sys.exc_info())
+  finally:
+      db.session.close()
+  if error:
+    flash('Oops, an error occurred in Show! ' + 'The Venue (id: ' + venue_id + ') and the Artist (id:' + artist_id +') could not be listed.' )
+  else:
+    flash('Show was successfully listed!')
   return render_template('pages/home.html')
+
 
 @app.errorhandler(404)
 def not_found_error(error):
