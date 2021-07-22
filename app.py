@@ -287,7 +287,7 @@ def delete_venue(venue_id):
 
       Shows.query.filter_by(venue_id=venue_id).delete()
       Venue.query.filter_by(id=venue_id).delete()
-      
+
       db.session.commit()
 
   except:
@@ -407,6 +407,43 @@ def show_artist(artist_id):
   }
 
   return render_template('pages/show_artist.html', artist=data)
+
+#  Delete Artist
+#  ----------------------------------------------------------------
+@app.route('/artists/<int:artist_id>/delete', methods=['DELETE'])
+
+def delete_artist(artist_id):
+  # TODO: Complete this endpoint for taking a venue_id, and using
+  # SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
+
+  # DONE!!!
+  
+  # # start with no error
+  error = False
+  
+  try:
+
+      Shows.query.filter_by(artist_id=artist_id).delete()
+      Artist.query.filter_by(id=artist_id).delete()
+      
+      db.session.commit()
+
+  except:
+      db.session.rollback()
+
+  finally:
+      db.session.close()
+  
+  if error:
+    flash('Oops, an error occurred in Artist! The artist could not be delete.' )
+
+  else:
+    flash('The artist was successfully deleted!')
+
+  #### can not use redirect(url) here, because it gives a 405 error
+  #### redirect is not allowed in a DELETE request
+  return jsonify({'success':True})
+
 
 #  Update
 #  ----------------------------------------------------------------

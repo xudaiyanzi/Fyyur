@@ -73,6 +73,23 @@
 </section>
 
 <a href="/artists/{{ artist.id }}/edit"><button class="btn btn-primary btn-lg">Edit</button></a>
+<button id="delete-button" data-id="{{artist.id}}"> delete </button>
+
+<script>
+
+	const deleteCross = document.getElementById("delete-button");
+	deleteCross.onclick =  function(e) {
+			const artist_id = e.target.dataset['id'];
+			fetch('/artists/' + artist_id + '/delete', {
+			method: 'DELETE',
+			})
+			.then(res => console.log(res))
+			.then(setTimeout(function(){
+				window.location.href = '/artists'
+				}, 100)
+			)
+	}
+</script>
 
 {% endblock %}
 
