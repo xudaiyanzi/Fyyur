@@ -710,6 +710,27 @@ if not app.debug:
     app.logger.addHandler(file_handler)
     app.logger.info('errors')
 
+@app.route('/shows/<int:show_id>/delete', methods=['DELETE'])
+
+def delete_show(show_id):
+  error = False
+  try:
+      Shows.query.filter_by(id=show_id).delete()
+      db.session.commit()
+  except:
+      db.session.rollback()
+  finally:
+      db.session.close()
+  if error:
+    flash('Oops, an error occurred in Show! The show could not be delete.' )
+
+  else:
+    flash('The show was successfully deleted!')
+
+  #### can not use redirect(url) here, because it gives a 405 error
+  #### redirect is not allowed in a DELETE request
+  return jsonify({'success':True})
+
 #----------------------------------------------------------------------------#
 # Launch.
 #----------------------------------------------------------------------------#

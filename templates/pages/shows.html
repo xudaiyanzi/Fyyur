@@ -11,7 +11,26 @@
             <p>playing at</p>
             <h5><a href="/venues/{{ show.venue_id }}">{{ show.venue_name }}</a></h5>
         </div>
+
+        <button id="delete-button" data-id="{{show.id}}"> delete </button>
+    
     </div>
     {% endfor %}
 </div>
+
+<script>
+	const deleteCross = document.getElementById("delete-button");
+	deleteCross.onclick =  function(e) {
+			const show_id = e.target.dataset['id'];
+			fetch('/shows/' + show_id + '/delete', {
+			method: 'DELETE',
+			})
+			.then(res => console.log(res))
+			.then(setTimeout(function(){
+				window.location.href = '/shows'
+				}, 100)
+			)
+	}
+</script>
+
 {% endblock %}
