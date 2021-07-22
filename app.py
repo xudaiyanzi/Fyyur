@@ -147,9 +147,9 @@ def show_venue(venue_id):
   for show in Shows.query.filter_by(venue_id=venue_id).all():
 
     artist_id = show.artist_id
-    artist_name = Artist.query.get(Shows.artist_id).name
-    artist_image_link = Artist.query.get(Shows.artist_id).image_link
-    start_time = show.start_time
+    artist_name = Artist.query.filter_by(id=artist_id).first().name
+    artist_image_link = Artist.query.filter_by(id=artist_id).first().image_link
+    start_time = show.start_time.strftime("%m/%d/%Y, %H:%M")
     show_item = {
       "artist_id" : artist_id,
       "artist_name" : artist_name,
@@ -368,9 +368,9 @@ def show_artist(artist_id):
   for show in Shows.query.filter_by(artist_id=artist_id).all():
 
     venue_id = show.venue_id
-    venue_name = Venue.query.get(Shows.venue_id).name
-    venue_image_link = Venue.query.get(Shows.venue_id).image_link
-    start_time = show.start_time
+    venue_name = Venue.query.filter_by(id=venue_id).first().name
+    venue_image_link = Venue.query.filter_by(id=venue_id).first().image_link
+    start_time = show.start_time.strftime("%m/%d/%Y, %H:%M")
     
     show_item = {
       "venue_id" : venue_id,
@@ -542,14 +542,14 @@ def shows():
   show_item = {}
   
   for show in Shows.query.all():
-      venue_id = Shows.query.filter_by(id=Shows.venue_id).id
-      venue_name = Venue.query.filter_by(id=Shows.venue_id).name
+      venue_id = Venue.query.filter_by(id=Shows.venue_id).first().id
+      venue_name = Venue.query.filter_by(id=Shows.venue_id).first().name
 
-      artist_id = Shows.query.filter_by(id=Shows.artist_id).id
-      artist_name = Artist.query.filter_by(id=Shows.artist_id).name
-      artist_image_link = Artist.query.filter_by(id=Shows.artist_id).image_link
+      artist_id = Artist.query.filter_by(id=Shows.artist_id).first().id
+      artist_name = Artist.query.filter_by(id=Shows.artist_id).first().name
+      artist_image_link = Artist.query.filter_by(id=Shows.artist_id).first().image_link
 
-      start_time = Shows.query.filter_by(id=Shows.venue_id).start_time
+      start_time = Shows.query.filter_by(id=Shows.id).first().start_time.strftime("%m/%d/%Y, %H:%M")
 
       show_item = {
         "id": show.id,
@@ -574,6 +574,7 @@ def create_shows():
 def create_show_submission():
   # called to create new shows in the db, upon submitting new show listing form
   # TODO: insert form data as a new Show record in the db, instead
+  # Done!!!
 
   error = False
   try:
