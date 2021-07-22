@@ -285,7 +285,9 @@ def delete_venue(venue_id):
   
   try:
 
+      Shows.query.filter_by(venue_id=venue_id).delete()
       Venue.query.filter_by(id=venue_id).delete()
+      
       db.session.commit()
 
   except:
@@ -478,6 +480,7 @@ def edit_venue(venue_id):
 def edit_venue_submission(venue_id):
   # TODO: take values from the form submitted, and update existing
   # venue record with ID <venue_id> using the new attributes
+  # DONE!!!
   error = False
 
   venue = Venue.query.filter_by(id=venue_id).first_or_404()
