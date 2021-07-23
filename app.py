@@ -710,6 +710,43 @@ if not app.debug:
     app.logger.addHandler(file_handler)
     app.logger.info('errors')
 
+@app.route('/shows/<int:show_id>/edit', methods=['GET'])
+def edit_show(show_id):
+  show = Shows.query.filter_by(id=show_id).first()
+  form = ShowForm(obj=show)
+
+  return render_template('forms/edit_show.html', form=form, show=show)
+
+@app.route('/shows/<int:show_id>/edit', methods=['POST'])
+def edit_show_submission(show_id):
+  error = False
+
+  show = Shows.query.filter_by(id=show_id).first_or_404()
+  form = ShowForm(request.form)
+
+  try:
+      show.artist_id = request.form['artist_id']
+      show.venue_id = request.form['venue_id']
+      show.start_time = request.form['start_time']
+
+      db.session.commit()
+      
+  except:
+      db.session.rollback()
+      error=True
+      print(sys.exc_info())
+  finally:
+      db.session.close()
+  if error:
+    flash('Oops, an error occurred in Show! ' + 'The ' + request.form['name'] + ' could not be updated.' )
+
+  else:
+      # on successful db insert, flash success
+    flash('Show (id: ' + str(show_id) + ') was successfully updated!')
+  
+  return redirect(url_for('shows', show_id=show_id))
+
+
 @app.route('/shows/<int:show_id>/delete', methods=['DELETE'])
 
 def delete_show(show_id):
