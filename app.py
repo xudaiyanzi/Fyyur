@@ -1,7 +1,6 @@
 #----------------------------------------------------------------------------#
 # Imports
 #----------------------------------------------------------------------------#
-
 import json
 import dateutil.parser
 import babel
@@ -170,7 +169,8 @@ def show_venue(venue_id):
     "address": data_get.address,
     "phone": data_get.phone,
     "website": data_get.website,
-    "genres": data_get.genres,
+    # convert json to list
+    "genres": json.loads(data_get.genres),
     "website": data_get.website,
     "facebook_link": data_get.facebook_link,
     "seeking_talent": data_get.seeking_talent,
@@ -215,7 +215,7 @@ def create_venue_submission():
       state = request.form['state']
       address = request.form['address']
       phone = request.form['phone']
-      genres = request.form['genres']
+      genres = request.form.getlist('genres')
       facebook_link = request.form['facebook_link']
       image_link = request.form['image_link']
       website = request.form['website_link']
