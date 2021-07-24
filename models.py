@@ -17,7 +17,7 @@ from datetime import datetime
 
 
 class Venue(db.Model):
-    __tablename__ = 'Venue'
+    __tablename__ = 'venues'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
@@ -40,15 +40,15 @@ class Venue(db.Model):
     seeking_description = db.Column(db.String(1000))
     
 
-    shows = relationship("Shows", backref=backref("Venue", lazy=True))
+    shows = relationship("shows", backref=backref("venues", lazy=True))
     ### 2) build the relationship with model "Artist"
     # # artist = db.relationship("Artist", backref=backref("Venue"), secondary="Shows")
 
     def __repr__(self):
-        return "<Venue>" % self.name
+        return "<venues>" % self.name
 
 class Artist(db.Model):
-    __tablename__ = 'Artist'
+    __tablename__ = 'artists'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
@@ -65,20 +65,20 @@ class Artist(db.Model):
     seeking_venue = db.Column(db.Boolean)
     seeking_description = db.Column(db.String(1000))
 
-    shows = relationship("Shows", backref=backref("Artist", lazy=True))
+    shows = relationship("shows", backref=backref("artists", lazy=True))
     # venue = relationship("Venue", secondary="Shows")
 
     def __repr__(self):
-        return "<Artist>" % self.name
+        return "<artists>" % self.name
 
 class Shows(db.Model):
-    __tablename__ = 'Shows'
+    __tablename__ = 'shows'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    venue_id = db.Column('venue_id', db.Integer, db.ForeignKey('Venue.id', ondelete='CASCADE'), nullable=False)
-    artist_id = db.Column('artist_id', db.Integer, db.ForeignKey('Artist.id', ondelete='CASCADE'), nullable=False)
+    venue_id = db.Column('venue_id', db.Integer, db.ForeignKey('venues.id', ondelete='CASCADE'), nullable=False)
+    artist_id = db.Column('artist_id', db.Integer, db.ForeignKey('artists.id', ondelete='CASCADE'), nullable=False)
     start_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     def __repr__(self):
-        return "<Shows>" % self.id % self.venue_id % self.artist_id % self.start_time
+        return "<shows>" % self.id % self.venue_id % self.artist_id % self.start_time
 
