@@ -1,7 +1,6 @@
 #----------------------------------------------------------------------------#
 # Imports
 #----------------------------------------------------------------------------#
-import json
 import dateutil.parser
 import babel
 from flask import Flask, render_template, request, Response, flash, redirect, url_for, jsonify
@@ -169,8 +168,7 @@ def show_venue(venue_id):
     "address": data_get.address,
     "phone": data_get.phone,
     "website": data_get.website,
-    # convert json to list
-    "genres": json.loads(data_get.genres),
+    "genres": data_get.genres,
     "website": data_get.website,
     "facebook_link": data_get.facebook_link,
     "seeking_talent": data_get.seeking_talent,
@@ -394,7 +392,7 @@ def show_artist(artist_id):
     "state": data_get.state,
     "phone": data_get.phone,
     "website": data_get.website,
-    "genres": json.loads(data_get.genres),
+    "genres": data_get.genres,
     "website": data_get.website,
     "facebook_link": data_get.facebook_link,
     "seeking_venue": data_get.seeking_venue,
