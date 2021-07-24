@@ -394,7 +394,7 @@ def show_artist(artist_id):
     "state": data_get.state,
     "phone": data_get.phone,
     "website": data_get.website,
-    "genres": data_get.genres,
+    "genres": json.loads(data_get.genres),
     "website": data_get.website,
     "facebook_link": data_get.facebook_link,
     "seeking_venue": data_get.seeking_venue,
@@ -580,7 +580,10 @@ def create_artist_submission():
       city = request.form['city']
       state = request.form['state']
       phone = request.form['phone']
-      genres = request.form['genres']
+
+      # get multiple genres as in a list
+      genres = request.form.getlist('genres')
+      
       facebook_link = request.form['facebook_link']
       image_link = request.form['image_link']
       website = request.form['website_link']
