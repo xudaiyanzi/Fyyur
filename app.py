@@ -15,6 +15,7 @@ from forms import *
 from models import db, Venue, Artist, Shows
 from datetime import datetime
 import sys
+from sqlalchemy import join
 
 #----------------------------------------------------------------------------#
 # App Config.
@@ -78,6 +79,8 @@ def venues():
   num_upcoming_shows = 0
   data = []
 
+### method without using the join:
+
   locations = db.session.query(Venue.city, Venue.state).distinct()
   for location in locations:
     location_city = location.city
@@ -137,29 +140,17 @@ def show_venue(venue_id):
 
 #Done!!!
 
+# with join:
   data_get = Venue.query.get(venue_id)
 
-  past_shows = []
-  upcoming_shows = []
+  past_shows = db.session.query(Artist, Shows).join(Shows).join(Venue).\
+      filter(Shows.venue_id==venue_id, Shows.artist_id == Artist.id,\
+      Shows.start_time<datetime.now()).all()
 
-  for show in Shows.query.filter_by(venue_id=venue_id).all():
-
-    artist_id = show.artist_id
-    artist_name = Artist.query.filter_by(id=artist_id).first().name
-    artist_image_link = Artist.query.filter_by(id=artist_id).first().image_link
-    start_time = show.start_time.strftime("%m/%d/%Y, %H:%M")
-    show_item = {
-      "artist_id" : artist_id,
-      "artist_name" : artist_name,
-      "artist_image_link" : artist_image_link,
-      "start_time" : start_time
-    }
-
-    if show.start_time > datetime.now():
-      upcoming_shows.append(show_item)
-    else:
-      past_shows.append(show_item)
-
+  upcoming_shows = db.session.query(Artist, Shows).join(Shows).join(Venue).\
+      filter(Shows.venue_id==venue_id, Shows.artist_id == Artist.id,\
+      Shows.start_time>datetime.now()).all()
+    
   data = {
     "id": data_get.id,
     "name": data_get.name,
@@ -174,11 +165,68 @@ def show_venue(venue_id):
     "seeking_talent": data_get.seeking_talent,
     "seeking_description": data_get.seeking_description,
     "image_link": data_get.image_link,
-    "past_shows": past_shows,
+
+    "past_shows": list([{
+        'artist_id': artist.id,
+        'artist_name': artist.name,
+        'artist_image_link':artist.image_link,
+        'start_time':show.start_time.strftime("%m/%d/%Y, %H:%M"),
+    } for artist, show in past_shows]),
+    
+    "upcoming_shows": list([{
+        'artist_id': artist.artist_id,
+        'artist_name': artist.artist.name,
+        'artist_image_link':artist.artist.image_link,
+        'start_time':show.start_time.strftime("%m/%d/%Y, %H:%M"),
+    } for artist, show in upcoming_shows]),
+
     "past_shows_count": len(past_shows),
-    "upcoming_shows": upcoming_shows,
     "upcoming_shows_count": len(upcoming_shows)
   }
+
+# #   without join
+#   data_get = Venue.query.get(venue_id)
+
+#   past_shows = []
+#   upcoming_shows = []
+
+# for show in Shows.query.filter_by(venue_id=venue_id).all():
+
+#     artist_id = show.artist_id
+#     artist_name = Artist.query.filter_by(id=artist_id).first().name
+#     artist_image_link = Artist.query.filter_by(id=artist_id).first().image_link
+#     start_time = show.start_time.strftime("%m/%d/%Y, %H:%M")
+#     show_item = {
+#       "artist_id" : artist_id,
+#       "artist_name" : artist_name,
+#       "artist_image_link" : artist_image_link,
+#       "start_time" : start_time
+#     }
+
+#     if show.start_time > datetime.now():
+#       upcoming_shows.append(show_item)
+#     else:
+#       past_shows.append(show_item)
+
+#   data = {
+#     "id": data_get.id,
+#     "name": data_get.name,
+#     "city": data_get.city,
+#     "state": data_get.state,
+#     "address": data_get.address,
+#     "phone": data_get.phone,
+#     "website": data_get.website,
+#     "genres": data_get.genres,
+#     "website": data_get.website,
+#     "facebook_link": data_get.facebook_link,
+#     "seeking_talent": data_get.seeking_talent,
+#     "seeking_description": data_get.seeking_description,
+#     "image_link": data_get.image_link,
+#     "past_shows": past_shows,
+#     "past_shows_count": len(past_shows),
+#     "upcoming_shows": upcoming_shows,
+#     "upcoming_shows_count": len(upcoming_shows)
+#   }
 
   return render_template('pages/show_venue.html', venue=data)
 
