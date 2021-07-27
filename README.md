@@ -13,3 +13,15 @@ $ flask db migrate -m "ANYTING CHANGED"
 
 step4: apply the change to database
 $ flask upgrade
+
+## Extra work
+
+beyond the requirements in Udacity, I also add the "edit and delete" function in "Artist" and "Shows" pages.
+
+I also used "join" to present the shows and artists info in Venue page; and the shows and venues info in Artist page
+
+Most importantly, the constrains in phones/weblinks are included in venue page. 
+
+## To be improved
+
+I should revise the constrains in phones/weblinks in both artists and venues page. I should not make it very restrictly.
