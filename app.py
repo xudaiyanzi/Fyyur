@@ -248,13 +248,8 @@ def create_venue_submission():
 # DONE!!!
   # # start with no error
   error = False
-
-  # use try-except-close to control the session controller
-  ## this could help handle errors
       
   try:
-      # use the request to get the data from html
-  # if request.method == 'POST': 
 
       name = request.form['name']
       city = request.form['city']
@@ -518,7 +513,7 @@ def edit_artist_submission(artist_id):
       artist.city = request.form['city']
       artist.state = request.form['state']
       artist.phone = request.form['phone']
-      artist.genres = request.form['genres']
+      artist.genres = request.form.getlist('genres')
       artist.facebook_link = request.form['facebook_link']
       artist.image_link = request.form['image_link']
       artist.website = request.form['website_link']
@@ -575,7 +570,7 @@ def edit_venue_submission(venue_id):
       venue.state = request.form['state']
       venue.address = request.form['address']
       venue.phone = request.form['phone']
-      venue.genres = request.form['genres']
+      venue.genres = request.form.getlist('genres')
       venue.facebook_link = request.form['facebook_link']
       venue.image_link = request.form['image_link']
       venue.website = request.form['website_link']
