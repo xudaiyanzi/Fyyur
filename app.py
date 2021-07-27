@@ -172,7 +172,7 @@ def show_venue(venue_id):
         'artist_image_link':artist.image_link,
         'start_time':show.start_time.strftime("%m/%d/%Y, %H:%M"),
     } for artist, show in past_shows]),
-    
+
     "upcoming_shows": list([{
         'artist_id': artist.artist_id,
         'artist_name': artist.artist.name,
@@ -410,28 +410,15 @@ def show_artist(artist_id):
   # DONE!!!
 
   data_get = Artist.query.get(artist_id)
-  past_shows = []
-  upcoming_shows = []
 
-  for show in Shows.query.filter_by(artist_id=artist_id).all():
+  past_shows = db.session.query(Venue, Shows).join(Shows).join(Artist).\
+      filter(Shows.artist_id==artist_id, Shows.venue_id == Venue.id,\
+      Shows.start_time<datetime.now()).all()
 
-    venue_id = show.venue_id
-    venue_name = Venue.query.filter_by(id=venue_id).first().name
-    venue_image_link = Venue.query.filter_by(id=venue_id).first().image_link
-    start_time = show.start_time.strftime("%m/%d/%Y, %H:%M")
-    
-    show_item = {
-      "venue_id" : venue_id,
-      "venue_name" : venue_name,
-      "venue_image_link" : venue_image_link,
-      "start_time" : start_time
-    }
+  upcoming_shows = db.session.query(Venue, Shows).join(Shows).join(Artist).\
+      filter(Shows.artist_id==artist_id, Shows.venue_id == Venue.id,\
+      Shows.start_time>datetime.now()).all()
 
-    if show.start_time < datetime.now():
-      past_shows.append(show_item)
-
-    if show.start_time > datetime.now():
-      upcoming_shows.append(show_item)
 
   data = {
     "id": data_get.id,
@@ -446,9 +433,22 @@ def show_artist(artist_id):
     "seeking_venue": data_get.seeking_venue,
     "seeking_description": data_get.seeking_description,
     "image_link": data_get.image_link,
-    "past_shows": past_shows,
+
+    "past_shows": list([{
+      "venue_id" : venue.id,
+      "venue_name" : venue.name,
+      "venue_image_link" : venue.image_link,
+      "start_time" : show.start_time.strftime("%m/%d/%Y, %H:%M")
+    } for venue, show in past_shows]),
+
+    "upcoming_shows": list([{
+      "venue_id" : venue.id,
+      "venue_name" : venue.name,
+      "venue_image_link" : venue.image_link,
+      "start_time" : show.start_time.strftime("%m/%d/%Y, %H:%M")
+    } for venue, show in upcoming_shows]),
+
     "past_shows_count": len(past_shows),
-    "upcoming_shows": upcoming_shows,
     "upcoming_shows_count": len(upcoming_shows)
   }
 
